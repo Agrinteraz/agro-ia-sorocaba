@@ -60,6 +60,12 @@ with tab1:
             # Gráfico de Tendência Regional
             st.markdown("---")
             st.subheader("📈 Tendência Histórica")
+            # O Texto explicativo entra aqui:
+            st.write("""
+            Este gráfico mostra a média de produtividade da região nos últimos anos. 
+            Ele serve para comparar a **previsão atual** com o **desempenho histórico** local, 
+            ajudando a identificar se este é um ano de potencial recorde ou de atenção.
+            """)
             data_grafico = {
                 'Ano': ['2020', '2021', '2022', '2023', '2024', '2025'],
                 'Produtividade (kg/ha)': [4200, 4500, 4100, 4800, 5100, 4950]
