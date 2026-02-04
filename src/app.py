@@ -25,7 +25,20 @@ with tab1:
     
     # Parâmetros conforme o seu Passo 2 e 5 do Notebook
     cidade = st.selectbox("Cidade", ['Sorocaba (SP)', 'Itapetininga (SP)', 'Itapeva (SP)', 'Capão Bonito (SP)'])
-    chuva = st.number_input("Chuva Acumulada no Ciclo (mm)", 300, 1500, 800)
+    # Dados de médias históricas (Exemplos aproximados - ajuste com seus dados do IBGE/NASA)
+    medias_chuva = {
+        'Sorocaba (SP)': 850,
+        'Itapetininga (SP)': 920,
+        'Itapeva (SP)': 1050,
+        'Capão Bonito (SP)': 1100
+    }
+    
+    chuva_sugerida = medias_chuva.get(cidade, 800)
+    
+    st.info(f"💡 Em {cidade}, a média histórica de chuva para este ciclo é de aproximadamente **{chuva_sugerida}mm**.")
+    
+    # Agora o input de chuva pode usar essa média como valor padrão (value)
+    chuva = st.number_input("Chuva Acumulada no Ciclo (mm)", 300, 1500, chuva_sugerida)
     
     # NDVI como Opção Avançada (conforme sua sugestão)
     with st.expander("🛠️ Opção Avançada: Índice de Satélite (NDVI)"):
