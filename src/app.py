@@ -100,5 +100,5 @@ with tab2:
 st.markdown("---")
 st.subheader("💡 Consultoria Agrinteraz")
 st.write("Precisa de uma análise detalhada via satélite do seu talhão?")
-link_wa = "https://wa.me/55159XXXXXX?text=Olá!%20Gostaria%20de%20um%20diagnóstico%20detalhado%20da%20minha%20safra."
+link_wa = "https://wa.me/5515981806430?text=Olá!%20Gostaria%20de%20um%20diagnóstico%20detalhado%20da%20minha%20safra."
 st.link_button("🟢 Falar com Especialista no WhatsApp", link_wa)
