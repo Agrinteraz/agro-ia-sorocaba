@@ -39,4 +39,4 @@ if st.button("Calcular Estimativa de Colheita"):
     st.info("Nota: Este cálculo é baseado no modelo treinado com dados históricos da região de Sorocaba.")
 
 st.markdown("---")
-st.caption("Desenvolvido por [Seu Nome/Sua Empresa] - Especialista em IA para o Agro.")
+st.caption("Desenvolvido por Agrinteraz - Especialista em IA para o Agro.")
