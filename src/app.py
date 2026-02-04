@@ -3,10 +3,10 @@ import pandas as pd
 import joblib
 import os
 
-# Configuração da página (deve ser a primeira linha do Streamlit)
-st.set_page_config(page_title="AgroIA - Sorocaba", page_icon="🌾", layout="wide")
+# Configuração da página
+st.set_page_config(page_title="AgroIA - Sorocaba", page_icon="🌾")
 
-# Função para carregar o modelo com segurança
+# Função para carregar o modelo
 def carregar_modelo():
     caminho_atual = os.path.dirname(__file__)
     caminho_modelo = os.path.join(caminho_atual, 'modelo_agro.pkl')
@@ -14,79 +14,65 @@ def carregar_modelo():
 
 modelo = carregar_modelo()
 
-# Título Principal
 st.title("🌾 AgroIA: Inteligência de Safra Regional")
-st.markdown("---")
 
 # Criando as Abas
-tab_simulador, tab_tecnica = st.tabs(["🚜 Simulador de Produtividade", "🔬 Metodologia e Ciência"])
+aba1, aba2 = st.tabs(["🚜 Simulador", "🔬 Metodologia"])
 
-# --- ABA 1: SIMULADOR ---
-with tab_simulador:
-    st.subheader("Simulação de Safra em Tempo Real")
+with aba1:
+    st.subheader("Simulador de Produtividade")
     
-    col1, col2 = st.columns([1, 2])
-    
-    with col1:
-        st.info("Ajuste os parâmetros abaixo:")
-        cidade = st.selectbox("Selecione a Cidade", ['Sorocaba (SP)', 'Itapetininga (SP)', 'Itapeva (SP)', 'Capão Bonito (SP)'])
-        ndvi = st.slider("Vigor Vegetativo (NDVI)", 0.4, 0.9, 0.7, help="Índice de saúde da planta captado por satélite.")
-        chuva = st.number_input("Chuva Acumulada no Ciclo (mm)", 300, 1500, 800)
+    # Parâmetros Básicos (Sempre visíveis)
+    cidade = st.selectbox("Cidade", ['Sorocaba (SP)', 'Itapetininga (SP)', 'Itapeva (SP)', 'Capão Bonito (SP)'])
+    temp = st.slider("Temperatura Média (°C)", 10, 45, 25)
+    chuva = st.number_input("Chuva Acumulada (mm)", 300, 1500, 800)
+
+    # --- OPÇÕES AVANÇADAS (Expander) ---
+    with st.expander("🛠️ Opções Avançadas (Análise de Satélite)"):
+        st.write("Use estas opções se você tiver dados de monitoramento remoto.")
+        usar_ndvi = st.checkbox("Incluir Índice NDVI (Vigor Vegetativo)")
+        if usar_ndvi:
+            ndvi_val = st.slider("Valor do NDVI", 0.0, 1.0, 0.7)
+            st.caption("O NDVI ajuda a refinar a previsão com base na biomassa real da planta.")
+
+    if st.button("🚀 Calcular Produtividade"):
+        # Lógica de cálculo: Se o seu modelo atual só aceita temp e chuva,
+        # passamos apenas esses dois. O NDVI entra como um "divisor" ou 
+        # ajuste no futuro quando seu modelo for atualizado.
         
-        btn_prever = st.button("🚀 Calcular Produtividade")
+        dados = pd.DataFrame([[temp, chuva]], columns=['temperatura', 'chuva'])
+        pred = modelo.predict(dados)[0]
+        
+        # Exemplo de ajuste manual simples se o NDVI estiver marcado 
+        # (apenas para ilustrar ao cliente, até você treinar o modelo com NDVI)
+        if usar_ndvi:
+            # Se o NDVI for alto, aumenta a estimativa em até 10%
+            ajuste = (ndvi_val - 0.5) * 0.2 
+            pred = pred * (1 + ajuste)
 
-    with col2:
-        if btn_prever:
-            # Lógica de Previsão
-            dados = pd.DataFrame([[ndvi, chuva]], columns=['ndvi_pico', 'chuva_acumulada'])
-            pred = modelo.predict(dados)[0]
-            
-            st.metric(f"Expectativa para {cidade}", f"{pred:.2f} kg/ha")
-            
-            # Gráfico de Tendência (Sugestão 2 corrigida)
-            st.markdown("#### Tendência Regional")
-            data_grafico = {
-                'Ano': ['2020', '2021', '2022', '2023', '2024', '2025'],
-                'Produtividade (kg/ha)': [4200, 4500, 4100, 4800, 5100, 4950]
-            }
-            df_historico = pd.DataFrame(data_grafico)
-            st.line_chart(df_historico, x='Ano', y='Produtividade (kg/ha)')
-        else:
-            st.write("👈 Configure os dados ao lado e clique em calcular para ver os resultados.")
+        st.metric(f"Expectativa para {cidade}", f"{pred:.2f} kg/ha")
+        
+        # Gráfico de Tendência
+        st.markdown("---")
+        st.subheader("📈 Tendência de Produtividade na Região")
+        data_grafico = {
+            'Ano': ['2020', '2021', '2022', '2023', '2024', '2025'],
+            'Produtividade (kg/ha)': [4200, 4500, 4100, 4800, 5100, 4950]
+        }
+        df_historico = pd.DataFrame(data_grafico)
+        st.line_chart(df_historico, x='Ano', y='Produtividade (kg/ha)')
 
-# --- ABA 2: EXPLICAÇÃO TÉCNICA ---
-with tab_tecnica:
-    st.header("Documentação do Modelo")
+with aba2:
+    st.header("Metodologia Técnica")
+    st.write("""
+    A **Agrinteraz** utiliza modelos de regressão avançados para cruzar variáveis climáticas.
     
-    st.markdown("""
-    O modelo **AgroIA** foi desenvolvido para apoiar a tomada de decisão de produtores no sudoeste paulista. 
-    Diferente de cálculos genéricos, ele utiliza **Machine Learning** para correlacionar fatores biofísicos e climáticos.
+    **Níveis de Análise:**
+    1. **Básico:** Temperatura e Pluviometria regional.
+    2. **Avançado:** Integração de Vigor Vegetativo (NDVI) via satélite Sentinel-2.
     """)
-    
-    col_a, col_b = st.columns(2)
-    
-    with col_a:
-        st.subheader("🛰️ Fontes de Dados")
-        st.write("""
-        - **Imagens de Satélite (Sentinel-2):** Extração de NDVI para medir a fotossíntese ativa.
-        - **Dados Meteorológicos (NASA GPM):** Monitoramento de precipitação acumulada.
-        - **Bases Locais:** Histórico de safras da região de Sorocaba.
-        """)
+    st.info("O uso do NDVI permite identificar estresses hídricos antes mesmo de serem visíveis a olho nu.")
 
-    with col_b:
-        st.subheader("🤖 O Algoritmo")
-        st.write("""
-        Utilizamos o **Random Forest Regressor**, um algoritmo que cria múltiplas árvores de decisão para 
-        chegar a um resultado mais estável e preciso, reduzindo margens de erro causadas por anomalias climáticas.
-        """)
-        
-    st.warning("⚠️ **Nota Técnica:** Este simulador é uma ferramenta de apoio e não substitui o acompanhamento de um engenheiro agrônomo em campo.")
-
-# --- RODAPÉ DE CONTATO ---
+# Rodapé com o botão de contato (Sugestão 3)
 st.markdown("---")
-st.markdown("### 💡 Consultoria Agrinteraz")
-st.write("Precisa de uma análise exclusiva para sua propriedade? Nossa equipe utiliza dados de sensores locais para maximizar seu resultado.")
-
-# Espaço para o Botão do WhatsApp (Sugestão 3 em breve)
-if st.button("Falar com um Especialista"):
-    st.write("📞 Contato: (15) 981806430 | agrinteraz@gmail.com")
+st.write("💡 **Deseja um relatório completo com dados de satélite da sua fazenda?**")
