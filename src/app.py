@@ -15,13 +15,13 @@ def carregar_modelo():
 
 modelo = carregar_modelo()
 
-st.title("🌾 AgroIA: Monitoramento Regional")
+st.title("🌾 AgroIA: Monitoramento Regional//")
 
 # 3. Estrutura de Abas
 tab1, tab2 = st.tabs(["🚜 Simulador", "🔬 Metodologia"])
 
 with tab1:
-    st.subheader("Simulador de Produtividade")
+    st.subheader("Calculadora de Produtividade Agrícola")
     
     # Parâmetros conforme o seu Passo 2 e 5 do Notebook
     cidade = st.selectbox("Cidade", ['Sorocaba (SP)', 'Itapetininga (SP)', 'Itapeva (SP)', 'Capão Bonito (SP)'])
@@ -71,5 +71,5 @@ st.markdown("---")
 st.subheader("💡 Consultoria Agrinteraz")
 texto_wa = "Olá! Vi seu App AgroIA e gostaria de um diagnóstico personalizado."
 # Lembre-se de colocar seu número real abaixo
-link_wa = f"https://wa.me/55159XXXXXX?text={texto_wa.replace(' ', '%20')}"
+link_wa = f"https://wa.me/5515981806430?text={texto_wa.replace(' ', '%20')}"
 st.link_button("🟢 Falar com Especialista no WhatsApp", link_wa)
