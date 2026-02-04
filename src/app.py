@@ -15,7 +15,7 @@ def carregar_modelo():
 
 modelo = carregar_modelo()
 
-st.title("🌾 AgroIA: Monitoramento Regional//")
+st.title("🌾 AgroIA: Monitoramento Regional")
 
 # 3. Estrutura de Abas
 tab1, tab2 = st.tabs(["🚜 Simulador", "🔬 Metodologia"])
