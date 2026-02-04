@@ -50,7 +50,7 @@ A **Agrinteraz** desenvolve análises exclusivas para a sua fazenda, utilizando:
 
 # Botão que simula um CTA (Chamada para Ação)
 if st.button("Solicitar Diagnóstico para minha Propriedade"):
-    st.info("Entre em contato conosco pelo e-mail: contato@agrinteraz.com.br ou via WhatsApp (15) 9XXXX-XXXX")
+    st.info("Entre em contato conosco pelo e-mail: agrinteraz@gmail.com ou via WhatsApp (15) 981806430")
 
 
 st.markdown("---")
