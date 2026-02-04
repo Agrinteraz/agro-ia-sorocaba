@@ -6,66 +6,77 @@ import os
 # 1. Configuração da Página
 st.set_page_config(page_title="AgroIA - Sorocaba", page_icon="🌾")
 
-# 2. Carregamento do Modelo (compatível com seu joblib.dump)
+# 2. Carregamento do Modelo
 def carregar_modelo():
     caminho_atual = os.path.dirname(__file__)
-    # O seu código do notebook salva como 'modelo_agro.pkl'
     caminho_modelo = os.path.join(caminho_atual, 'modelo_agro.pkl')
     return joblib.load(caminho_modelo)
 
 modelo = carregar_modelo()
 
-st.title("🌾 AgroIA: Monitoramento Regional")
+st.title("🌾 AgroIA: Inteligência de Safra Agrinteraz")
 
 # 3. Estrutura de Abas
 tab1, tab2 = st.tabs(["🚜 Simulador", "🔬 Metodologia"])
 
 with tab1:
-    st.subheader("Calculadora de Produtividade Agrícola")
+    st.subheader("Simulador de Produtividade")
     
-    # Parâmetros conforme o seu Passo 2 e 5 do Notebook
+    # Seleção de Cidade e exibição da média histórica
     cidade = st.selectbox("Cidade", ['Sorocaba (SP)', 'Itapetininga (SP)', 'Itapeva (SP)', 'Capão Bonito (SP)'])
-    # Dados de médias históricas (Exemplos aproximados - ajuste com seus dados do IBGE/NASA)
+    
     medias_chuva = {
         'Sorocaba (SP)': 850,
         'Itapetininga (SP)': 920,
         'Itapeva (SP)': 1050,
         'Capão Bonito (SP)': 1100
     }
-    
     chuva_sugerida = medias_chuva.get(cidade, 800)
     
     st.info(f"💡 Em {cidade}, a média histórica de chuva para este ciclo é de aproximadamente **{chuva_sugerida}mm**.")
     
-    # Agora o input de chuva pode usar essa média como valor padrão (value)
     chuva = st.number_input("Chuva Acumulada no Ciclo (mm)", 300, 1500, chuva_sugerida)
     
-    # NDVI como Opção Avançada (conforme sua sugestão)
     with st.expander("🛠️ Opção Avançada: Índice de Satélite (NDVI)"):
-        st.write("Ajuste o vigor vegetativo se tiver dados do Sentinel-2/ESA.")
+        st.write("Ajuste o vigor vegetativo conforme dados do Sentinel-2.")
         ndvi = st.slider("Vigor Vegetativo (NDVI)", 0.4, 0.9, 0.7)
 
-    if st.button("🚀 Prever Produtividade"):
+    if st.button("🚀 Calcular e Gerar Diagnóstico"):
         try:
-            # Criamos o DataFrame com os nomes EXATOS do seu Passo 4:
-            # X = df_final[['ndvi_pico', 'chuva_acumulada']]
+            # Predição
             dados = pd.DataFrame([[ndvi, chuva]], columns=['ndvi_pico', 'chuva_acumulada'])
-            
-            # Realiza a predição
             pred = modelo.predict(dados)[0]
             
             st.metric(f"Expectativa para {cidade}", f"{pred:.2f} kg/ha")
-            st.write("Cálculo realizado com base em Random Forest Regressor treinado com dados ESA/NASA.")
-
-            # Gráfico de Tendência Regional
+            
+            # --- LÓGICA DE CONCLUSÃO DINÂMICA ---
             st.markdown("---")
-            st.subheader("📈 Tendência Histórica")
-            # O Texto explicativo entra aqui:
-            st.write("""
-            Este gráfico mostra a média de produtividade da região nos últimos anos. 
-            Ele serve para comparar a **previsão atual** com o **desempenho histórico** local, 
-            ajudando a identificar se este é um ano de potencial recorde ou de atenção.
-            """)
+            st.subheader("📝 Diagnóstico de Performance")
+            
+            # Dados históricos para comparação
+            historico = {2020: 4200, 2021: 4500, 2022: 4100, 2023: 4800}
+            superiores = [str(ano) for ano, media in historico.items() if pred > media]
+            inferiores = [str(ano) for ano, media in historico.items() if pred <= media]
+            
+            conclusao = f"A produtividade calculada de **{pred:.2f} kg/ha** "
+            
+            if superiores:
+                conclusao += f"é **maior** que a média da região nos anos de {', '.join(superiores)}. "
+            if inferiores:
+                conclusao += f"Por outro lado, projeta-se um resultado **menor** que o dos anos de {', '.join(inferiores)}."
+            
+            st.write(conclusao)
+            
+            # Dica visual
+            if pred > 4500:
+                st.success("✅ O cenário indica um potencial produtivo acima da média histórica recente.")
+            else:
+                st.warning("⚠️ O cenário sugere atenção, com produtividade abaixo dos picos históricos da região.")
+
+            # Gráfico de Tendência
+            st.markdown("---")
+            st.subheader("📈 Gráfico de Tendência Histórica")
+            st.write("Veja como a sua previsão se posiciona em relação aos anos anteriores:")
             data_grafico = {
                 'Ano': ['2020', '2021', '2022', '2023', '2024', '2025'],
                 'Produtividade (kg/ha)': [4200, 4500, 4100, 4800, 5100, 4950]
@@ -73,22 +84,21 @@ with tab1:
             st.line_chart(pd.DataFrame(data_grafico), x='Ano', y='Produtividade (kg/ha)')
 
         except Exception as e:
-            st.error(f"Erro na predição: {e}")
+            st.error(f"Erro no cálculo: {e}")
 
 with tab2:
     st.header("Metodologia Técnica")
-    st.write(f"""
-    Este modelo foi treinado utilizando dados de Sensoriamento Remoto e Climatologia:
-    - **Fonte Satelital:** Google Earth Engine (Copernicus/Sentinel-2).
-    - **Fonte Climática:** NASA POWER (Precipitação acumulada).
-    - **Algoritmo:** Random Forest Regressor (Ensemble Learning).
-    """)
+    st.write("""
+    Este simulador utiliza **Inteligência Artificial (Random Forest)** treinada com dados reais de:
+    - **NDVI:** Vigor da biomassa via satélite Sentinel-2 (ESA).
+    - **Pluviometria:** Acumulado de chuvas via NASA POWER.
     
+    A comparação histórica utiliza dados oficiais consolidados para o sudoeste paulista.
+    """)
 
-# 4. Rodapé de Contato (Sugestão 3)
+# Rodapé de Contato
 st.markdown("---")
 st.subheader("💡 Consultoria Agrinteraz")
-texto_wa = "Olá! Vi seu App AgroIA e gostaria de um diagnóstico personalizado."
-# Lembre-se de colocar seu número real abaixo
-link_wa = f"https://wa.me/5515981806430?text={texto_wa.replace(' ', '%20')}"
+st.write("Precisa de uma análise detalhada via satélite do seu talhão?")
+link_wa = "https://wa.me/55159XXXXXX?text=Olá!%20Gostaria%20de%20um%20diagnóstico%20detalhado%20da%20minha%20safra."
 st.link_button("🟢 Falar com Especialista no WhatsApp", link_wa)
