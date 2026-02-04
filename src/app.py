@@ -39,4 +39,19 @@ if st.button("Calcular Estimativa de Colheita"):
     st.info("Nota: Este cálculo é baseado no modelo treinado com dados históricos da região de Sorocaba.")
 
 st.markdown("---")
+st.subheader("💡 Consultoria Personalizada")
+st.write("""
+Este modelo utiliza dados regionais, mas cada propriedade tem suas particularidades. 
+A **Agrinteraz** desenvolve análises exclusivas para a sua fazenda, utilizando:
+* Dados históricos do seu talhão.
+* Sensores de solo e estações meteorológicas locais.
+* Relatórios de saúde da cultura via satélite.
+""")
+
+# Botão que simula um CTA (Chamada para Ação)
+if st.button("Solicitar Diagnóstico para minha Propriedade"):
+    st.info("Entre em contato conosco pelo e-mail: contato@agrinteraz.com.br ou via WhatsApp (15) 9XXXX-XXXX")
+
+
+st.markdown("---")
 st.caption("Desenvolvido por Agrinteraz - Especialista em IA para o Agro.")
