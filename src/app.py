@@ -37,24 +37,20 @@ if st.button("Calcular Estimativa de Colheita"):
     col2.metric("Total da Safra", f"{total_estimado:.2f} sacas")
     
     st.info("Nota: Este cálculo é baseado no modelo treinado com dados históricos da região de Sorocaba.")
-
 st.markdown("---")
 st.subheader("📈 Tendência de Produtividade na Região")
 
-# Criando dados simulados para Sorocaba e região
-# Em um projeto real, esses dados viriam do seu CSV ou Banco de Dados
 data_grafico = {
-    'Ano': [2020, 2021, 2022, 2023, 2024, 2025],
-    'Produtividade Média (kg/ha)': [4200, 4500, 4100, 4800, 5100, 4950]
+    'Ano': ['2020', '2021', '2022', '2023', '2024', '2025'], # Transformei em texto para sumir a vírgula
+    'Produtividade (kg/ha)': [4200, 4500, 4100, 4800, 5100, 4950]
 }
 df_historico = pd.DataFrame(data_grafico)
 
-# Exibindo o gráfico de linha
-st.line_chart(df_historico.set_index('Ano'))
+# Usando o st.line_chart mas com um pequeno truque para o eixo X
+st.line_chart(df_historico, x='Ano', y='Produtividade (kg/ha)')
 
 st.write("""
-*O gráfico acima mostra a evolução da produtividade média monitorada pela **Agrinteraz** nos municípios do sudoeste paulista. 
-Note como as variações climáticas influenciam o resultado final.*
+*O gráfico acima mostra a evolução da produtividade média monitorada pela **Agrinteraz** no sudoeste paulista.*
 """)
 
 st.markdown("---")
