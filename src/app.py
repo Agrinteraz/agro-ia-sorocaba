@@ -14,7 +14,7 @@ def carregar_modelo():
 
 modelo = carregar_modelo()
 
-st.title("🌾 AgroIA: Inteligência de Safra Agrinteraz")
+st.title("🌾 Agrinteraz - Inteligência de Safra")
 
 # 3. Estrutura de Abas
 tab1, tab2 = st.tabs(["🚜 Simulador", "🔬 Metodologia"])
